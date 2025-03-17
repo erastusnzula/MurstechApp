@@ -27,15 +27,11 @@ import com.example.murstechapp.screens.SignUpScreen
 fun NavigationStack(authModel: AuthModel) {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = ScreensNav.SignInScreen.route){
-        composable(route=ScreensNav.NavigationDrawerControl.route){
-            NavigationDrawerControl(navController=navController, authModel=authModel)
 
-        }
         composable(route = ScreensNav.HomeScreen.route){
             HomeScreen(
                 navController = navController,
-                scope = rememberCoroutineScope(),
-                drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+                authModel = authModel
             )
         }
         composable(route=ScreensNav.SettingsScreen.route){

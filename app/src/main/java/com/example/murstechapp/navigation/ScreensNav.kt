@@ -1,7 +1,6 @@
 package com.example.murstechapp.navigation
 
 sealed class ScreensNav(val route: String) {
-    data object NavigationDrawerControl: ScreensNav(route = "navigation-drawer-control")
     data object HomeScreen: ScreensNav(route = "home-screen")
     data object SettingsScreen: ScreensNav(route = "settings-screen")
     data object SignInScreen: ScreensNav(route = "sign-in-screen")

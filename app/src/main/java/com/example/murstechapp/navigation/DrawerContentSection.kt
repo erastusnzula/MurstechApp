@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -45,15 +46,16 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.murstechapp.R
+import com.example.murstechapp.models.AuthModel
 import com.example.murstechapp.ui.theme.MurstechAppTheme
 
 
 @Composable
-fun DrawerContentSection( navController: NavController, signOut:()->Unit){
+fun DrawerContentSection( navController: NavController, authModel: AuthModel){
     ModalDrawerSheet(
         modifier = Modifier,
         drawerShape = RoundedCornerShape(10),
-        drawerContainerColor = MaterialTheme.colorScheme.surfaceContainer,
+        drawerContainerColor = MaterialTheme.colorScheme.primaryContainer,
         drawerContentColor = MaterialTheme.colorScheme.secondary,
     ){
         Column(
@@ -140,7 +142,7 @@ fun DrawerContentSection( navController: NavController, signOut:()->Unit){
                 shape = RoundedCornerShape(30),
                 colors = NavigationDrawerItemDefaults.colors(
                     unselectedContainerColor = MaterialTheme.colorScheme.secondaryContainer.copy(.1f),
-                    selectedContainerColor = MaterialTheme.colorScheme.primary
+                    selectedContainerColor = MaterialTheme.colorScheme.surfaceContainer
                 ),
             )
             Spacer(Modifier.height(7.dp))
@@ -226,7 +228,7 @@ fun DrawerContentSection( navController: NavController, signOut:()->Unit){
                 shape = RoundedCornerShape(30),
                 colors = NavigationDrawerItemDefaults.colors(
                     unselectedContainerColor = MaterialTheme.colorScheme.secondaryContainer.copy(.1f),
-                    selectedContainerColor = MaterialTheme.colorScheme.primary.copy(.8f)
+                    selectedContainerColor = MaterialTheme.colorScheme.surfaceContainer
                 ),
             )
             Spacer(Modifier.height(7.dp))
@@ -315,7 +317,20 @@ fun DrawerContentSection( navController: NavController, signOut:()->Unit){
                     selectedContainerColor = MaterialTheme.colorScheme.primary
                 ),
             )
-            Button(onClick = signOut) {
+            Button(
+                elevation = ButtonDefaults.buttonElevation(
+                    defaultElevation = 20.dp
+                ),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                    contentColor = MaterialTheme.colorScheme.primary
+                ),
+                modifier = Modifier
+                .fillMaxWidth(),
+                onClick = {
+                authModel.logOut()
+            },
+                ) {
                 Text(
                     text = "Sign Out"
                 )
