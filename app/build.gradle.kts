@@ -53,9 +53,11 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.firebase.auth)
     implementation(libs.androidx.navigation.compose)
+    implementation (libs.androidx.material.icons.extended)
     implementation (libs.retrofit)
     implementation ("com.squareup.retrofit2:converter-gson:2.11.0")
     implementation(libs.coil.compose)
+    implementation(libs.androidx.runtime.livedata)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

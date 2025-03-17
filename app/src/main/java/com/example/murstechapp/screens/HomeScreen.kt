@@ -51,6 +51,7 @@ import com.example.murstechapp.navigation.ScreensNav
 import com.example.murstechapp.navigation.TopBarSection
 import com.example.murstechapp.ui.theme.MurstechAppTheme
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -62,7 +63,13 @@ fun HomeScreen(
 ) {
     Scaffold(
         modifier = Modifier,
-        topBar = { TopBarSection(scope = scope, drawerState = drawerState) },
+        topBar = { TopBarSection(openDrawer = {
+            scope.launch {
+                drawerState.apply {
+                    if (isClosed) open() else close()
+                }
+            }
+        }) },
         bottomBar = { BottomBarSection(navController = navController) },
         containerColor = MaterialTheme.colorScheme.surfaceContainer,
         contentColor = MaterialTheme.colorScheme.secondary,
@@ -107,110 +114,13 @@ fun HomeScreen(
                     .padding(top=10.dp)
 
             )
-            val allItems = CarouselModel(
-                title = "Get winter Discount",
-                imageUrl = R.drawable.snowy.toString(),
-                target = "For children",
-                discount = "20% Off"
-            )
-            val itemsArray = ArrayList<CarouselModel>()
-            for (i in 1..5){
-                itemsArray.add(allItems)
-            }
-            Spacer(Modifier.height(7.dp))
-
-            Row(
-                modifier = Modifier
-                    .horizontalScroll(rememberScrollState())
-            ) {
-                Carousel(navController = navController, carouselItems = itemsArray)
-            }
-            val itemsList = ItemModel(
-                name = "Item 1",
-                description = "Item Description",
-                price = 100.00,
-                quantity = 1,
-                discount =2,
-                imageUrl = R.drawable.cloudy_sunny.toString(),
-                size = 34,
-                rating =4.6,
-                tag = "Shirt",
-                category = "Shirts"
-            )
-            val listArray = ArrayList<ItemModel>()
-            for (i in 1..12){
-                listArray.add(itemsList)
-            }
-            Spacer(Modifier.height(7.dp))
-            Column(
-                modifier=Modifier
-                    .height(300.dp)
-            ) {
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
-
-                ) {
-                    Text(
-                        text = "Featured"
-                    )
-                    TextButton(onClick = {
-                        navController.navigate(route = ScreensNav.ItemsScreen.route)
-                    }) {
-                        Text(
-                            text = "See All"
-                        )
-                    }
-                }
-                Row(
-                    modifier=Modifier
-                        .horizontalScroll(rememberScrollState())
-                ) {
-                    Featured(featuredItems = listArray)
-                }
-
-            }
-            Spacer(Modifier.height(7.dp))
-
-            Column(
-                modifier=Modifier
-                    .height(300.dp)
-            ) {
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    Text(
-                        text = "Most Popular"
-                    )
-                    TextButton(onClick = {
-                        navController.navigate(route = ScreensNav.ItemsScreen.route)
-                    }) {
-                        Text(
-                            text = "See All"
-                        )
-                    }
-                }
-                Row(
-                    modifier=Modifier
-                        .horizontalScroll(rememberScrollState())
-                ) {
-                    MostPopular(mostPopularItems = listArray)
-                }
-
-
-            }
 
         }
 
     }
 
 }
-//
+
 //@Preview(showBackground = true)
 //@Composable
 //fun HomeScreenPreview() {
@@ -221,5 +131,5 @@ fun HomeScreen(
 ////            scope = rememberCoroutineScope(),
 ////            drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 ////        )
-//    }
+//   }
 //}

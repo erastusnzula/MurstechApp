@@ -8,14 +8,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
+import com.example.murstechapp.models.AuthModel
 import com.example.murstechapp.screens.HomeScreen
 
 @Composable
-fun NavigationDrawerControl(modifier: Modifier=Modifier, navController: NavController) {
+fun NavigationDrawerControl(navController: NavController, authModel: AuthModel) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     ModalNavigationDrawer(
-        drawerContent = { DrawerContentSection(navController = navController) },
+        drawerContent = { DrawerContentSection(navController = navController, signOut = {
+            authModel.logOut()
+        }) },
         modifier = Modifier,
         drawerState = drawerState,
         gesturesEnabled = true,

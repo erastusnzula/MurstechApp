@@ -7,4 +7,6 @@ import androidx.compose.runtime.remember
 
 object MutableInitialValues {
     val search: MutableState<String> = mutableStateOf("")
+    val signUpError = mutableStateOf("")
+    val signInError = mutableStateOf("")
 }

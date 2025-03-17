@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -48,7 +49,7 @@ import com.example.murstechapp.ui.theme.MurstechAppTheme
 
 
 @Composable
-fun DrawerContentSection(modifier: Modifier = Modifier, navController: NavController){
+fun DrawerContentSection( navController: NavController, signOut:()->Unit){
     ModalDrawerSheet(
         modifier = Modifier,
         drawerShape = RoundedCornerShape(10),
@@ -314,6 +315,11 @@ fun DrawerContentSection(modifier: Modifier = Modifier, navController: NavContro
                     selectedContainerColor = MaterialTheme.colorScheme.primary
                 ),
             )
+            Button(onClick = signOut) {
+                Text(
+                    text = "Sign Out"
+                )
+            }
 
 
         }
@@ -322,10 +328,10 @@ fun DrawerContentSection(modifier: Modifier = Modifier, navController: NavContro
 
 }
 
-@Preview(showBackground = true)
-@Composable
-fun previ(){
-    MurstechAppTheme {
-        DrawerContentSection(navController = rememberNavController())
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun previ(){
+//    MurstechAppTheme {
+//        DrawerContentSection(navController = rememberNavController())
+//    }
+//}

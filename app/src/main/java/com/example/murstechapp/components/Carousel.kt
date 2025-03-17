@@ -17,6 +17,8 @@ import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Text
@@ -50,41 +52,7 @@ fun Carousel(
 
 
     carouselItems.forEach {
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .clip(shape = RoundedCornerShape(10))
-                .background(MaterialTheme.colorScheme.primaryContainer.copy(.9f))
-                .width(LocalConfiguration.current.screenWidthDp.dp - 34.dp)
-                .height(150.dp)
-        ) {
 
-            Column(
-                modifier = Modifier
-                    .padding(7.dp)
-                    .fillMaxWidth()
-            ) {
-                Text(
-                    text = it.title
-                )
-                Text(
-                    text = it.discount
-                )
-                Text(
-                    text = it.target
-                )
-            }
-            Image(
-                painter = painterResource(it.imageUrl.toInt()),
-                contentDescription = "",
-                modifier = Modifier
-                    .padding(end = 7.dp)
-            )
-
-
-        }
-        Spacer(Modifier.width(7.dp))
     }
 
 

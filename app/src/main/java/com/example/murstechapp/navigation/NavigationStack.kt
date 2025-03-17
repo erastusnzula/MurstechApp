@@ -10,6 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 
 import androidx.navigation.compose.rememberNavController
+import com.example.murstechapp.models.AuthModel
 import com.example.murstechapp.screens.CartScreen
 import com.example.murstechapp.screens.ContactScreen
 import com.example.murstechapp.screens.HelpScreen
@@ -23,11 +24,11 @@ import com.example.murstechapp.screens.SignInScreen
 import com.example.murstechapp.screens.SignUpScreen
 
 @Composable
-fun NavigationStack() {
+fun NavigationStack(authModel: AuthModel) {
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = ScreensNav.NavigationDrawerControl.route){
+    NavHost(navController = navController, startDestination = ScreensNav.SignInScreen.route){
         composable(route=ScreensNav.NavigationDrawerControl.route){
-            NavigationDrawerControl(navController=navController)
+            NavigationDrawerControl(navController=navController, authModel=authModel)
 
         }
         composable(route = ScreensNav.HomeScreen.route){
@@ -62,10 +63,10 @@ fun NavigationStack() {
             HelpScreen(navController=navController)
         }
         composable(route=ScreensNav.SignInScreen.route){
-            SignInScreen(navController=navController)
+            SignInScreen(navController=navController, authModel = authModel)
         }
         composable(route=ScreensNav.SignUpScreen.route){
-            SignUpScreen(navController=navController)
+            SignUpScreen(navController=navController, authModel)
         }
     }
 

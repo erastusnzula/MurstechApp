@@ -47,7 +47,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBarSection(modifier: Modifier = Modifier, scope: CoroutineScope, drawerState: DrawerState){
+fun TopBarSection(openDrawer: ()->Unit){
    TopAppBar(
        title = {
            Column {
@@ -62,13 +62,7 @@ fun TopBarSection(modifier: Modifier = Modifier, scope: CoroutineScope, drawerSt
        modifier = Modifier,
        navigationIcon = {
            IconButton(
-               onClick = {
-                   scope.launch {
-                       drawerState.apply {
-                           if (isClosed) open() else close()
-                       }
-                   }
-               },
+               onClick = openDrawer,
                modifier=Modifier
                    .size(60.dp).clip(RoundedCornerShape(50))
                    .background(
@@ -100,17 +94,17 @@ fun TopBarSection(modifier: Modifier = Modifier, scope: CoroutineScope, drawerSt
 
 
        ),
-       scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+//       scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
    )
 
 }
 
-@Preview(showBackground = true)
-@Composable
-fun HomeScreenPreview(){
-    MurstechAppTheme {
-        //TopBarSection()
-        //HomeScreen(navController = rememberNavController())
-        NavigationDrawerControl(navController = rememberNavController())
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun HomeScreenPreview(){
+//    MurstechAppTheme {
+//        //TopBarSection()
+//        //HomeScreen(navController = rememberNavController())
+//        NavigationDrawerControl(navController = rememberNavController())
+//    }
+//}
