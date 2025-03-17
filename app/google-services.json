@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "569971247937",
+    "project_id": "murstechapp",
+    "storage_bucket": "murstechapp.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:569971247937:android:0d2cfb95c563f3150cefc0",
+        "android_client_info": {
+          "package_name": "com.example.murstechapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAwnszGsvYNa4uvVhUPCthTYSltpYtHos0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
