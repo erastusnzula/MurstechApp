@@ -22,11 +22,16 @@ import com.example.murstechapp.screens.SettingsScreen
 import com.example.murstechapp.screens.ShareScreen
 import com.example.murstechapp.screens.SignInScreen
 import com.example.murstechapp.screens.SignUpScreen
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun NavigationStack(authModel: AuthModel) {
+    val firebaseAuth = FirebaseAuth.getInstance()
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = ScreensNav.SignInScreen.route){
+    NavHost(
+        navController = navController,
+        startDestination = if(firebaseAuth.currentUser != null) ScreensNav.HomeScreen.route else ScreensNav.SignInScreen.route
+    ){
 
         composable(route = ScreensNav.HomeScreen.route){
             HomeScreen(

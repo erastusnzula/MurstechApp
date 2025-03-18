@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -21,9 +22,11 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -34,6 +37,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -44,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.murstechapp.R
 import com.example.murstechapp.data.MutableInitialValues
 import com.example.murstechapp.models.AuthModel
 import com.example.murstechapp.models.UserStatus
@@ -77,7 +84,7 @@ fun SignInScreen(navController: NavController, authModel: AuthModel) {
         verticalArrangement = Arrangement.Center,
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surfaceContainer)
+            .background(MaterialTheme.colorScheme.primaryContainer)
             .padding(16.dp)
     ) {
         Icon(
@@ -89,15 +96,64 @@ fun SignInScreen(navController: NavController, authModel: AuthModel) {
         )
 
         Spacer(Modifier.height(16.dp))
-        Text(
-            text = "Hi , ERASTUS",
-            style = MaterialTheme.typography.displaySmall
-        )
-        Spacer(Modifier.height(16.dp))
+
+//        Text(
+//            text = "Hi , ERASTUS",
+//            style = MaterialTheme.typography.displaySmall
+//        )
+
         Text(
             fontSize = 20.sp,
             text = "Welcome Back!"
         )
+        Spacer(Modifier.height(16.dp))
+
+            OutlinedButton(
+                onClick = {
+                },
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                ){
+                    Icon(
+                        painter = painterResource(R.drawable.google_icon),
+                        contentDescription = null,
+                        tint = Color.Unspecified
+
+                    )
+                    Text(
+                        text = "Sign in With Google",
+                        modifier = Modifier
+                            .padding(start = 10.dp),
+                        style = MaterialTheme.typography.titleMedium,
+
+                        )
+
+                }
+
+            }
+        Spacer(Modifier.height(16.dp))
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            HorizontalDivider(Modifier.width(
+                LocalConfiguration.current.screenWidthDp.dp/3
+            ))
+            Text(
+                fontSize = 15.sp,
+                text = "or"
+            )
+            HorizontalDivider(Modifier.width(
+                LocalConfiguration.current.screenWidthDp.dp/3
+            ))
+        }
         Spacer(Modifier.height(16.dp))
 
         Text(
