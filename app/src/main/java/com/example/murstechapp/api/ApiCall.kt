@@ -21,7 +21,7 @@ fun ApiCall() {
                 MutableInitialValues.electronics.value = "Electronics"
                 MutableInitialValues.mostPopular.value = "Most Popular"
                 MutableInitialValues.seeAll.value = "See All"
-                Toast.makeText(context, "Data fetch complete", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, "Data fetch complete!", Toast.LENGTH_LONG).show()
                 MutableInitialValues.carouselDiscount.value = "% Off"
 
                 for (product in p1.body()?.products!!){
