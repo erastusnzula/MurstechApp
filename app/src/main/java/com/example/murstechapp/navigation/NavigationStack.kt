@@ -18,6 +18,7 @@ import com.example.murstechapp.screens.HomeScreen
 import com.example.murstechapp.screens.ItemScreen
 import com.example.murstechapp.screens.ItemsScreen
 import com.example.murstechapp.screens.ProfileScreen
+import com.example.murstechapp.screens.SearchScreen
 import com.example.murstechapp.screens.SettingsScreen
 import com.example.murstechapp.screens.ShareScreen
 import com.example.murstechapp.screens.SignInScreen
@@ -68,6 +69,9 @@ fun NavigationStack(authModel: AuthModel) {
         }
         composable(route=ScreensNav.SignUpScreen.route){
             SignUpScreen(navController=navController, authModel)
+        }
+        composable(route=ScreensNav.SearchScreen.route){
+            SearchScreen(navController=navController)
         }
     }
 

@@ -9,8 +9,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,6 +20,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -29,7 +29,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.AttachFile
 import androidx.compose.material.icons.filled.Circle
 import androidx.compose.material.icons.filled.Clear
@@ -48,7 +47,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -69,12 +67,10 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -84,37 +80,30 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import coil.compose.AsyncImage
+import coil.compose.rememberAsyncImagePainter
 import com.example.murstechapp.R
+import com.example.murstechapp.api.ApiCall
 import com.example.murstechapp.data.MutableInitialValues
 import com.example.murstechapp.models.AuthModel
 import com.example.murstechapp.models.CarouselModel
-import com.example.murstechapp.models.ItemModel
 import com.example.murstechapp.models.UserStatus
 import com.example.murstechapp.navigation.ScreensNav
-import com.example.murstechapp.ui.theme.MurstechAppTheme
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavController, authModel: AuthModel) {
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    val scope = rememberCoroutineScope()
-    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
-
     val authenticationStatus = authModel.authenticationStatus.observeAsState()
     LaunchedEffect(authenticationStatus.value) {
-        when(authenticationStatus.value){
+        when (authenticationStatus.value) {
             is UserStatus.UnAuthenticated -> {
                 navController.navigate(route = ScreensNav.SignInScreen.route)
             }
@@ -123,10 +112,16 @@ fun HomeScreen(navController: NavController, authModel: AuthModel) {
                 MutableInitialValues.signInError.value =
                     (authenticationStatus.value as UserStatus.AuthenticationError).message
             }
+
             else -> Unit
         }
     }
-
+    ApiCall()
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+    val firebase = FirebaseAuth.getInstance()
+    MutableInitialValues.currentUser.value = firebase.currentUser?.email.toString()
+    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
     val imageURL = remember { mutableStateOf<Uri?>(null) }
     val bitmap = remember { mutableStateOf<Bitmap?>(null) }
     val context = LocalContext.current
@@ -136,8 +131,10 @@ fun HomeScreen(navController: NavController, authModel: AuthModel) {
         imageURL.value = it
     }
 
-    val firebase = FirebaseAuth.getInstance()
-    MutableInitialValues.currentUser.value = firebase.currentUser?.email.toString()
+    val allItemsApi = MutableInitialValues.allItemsApi.value
+    val allItemsApiMostPopular = MutableInitialValues.allItemsApiMostPopular.value
+    val allItemsApiElectronics = MutableInitialValues.allItemsApiElectronics.value
+    val allCarousels = MutableInitialValues.allItemsApiCarousel.value
 
     ModalNavigationDrawer(
         drawerContent = {
@@ -146,7 +143,7 @@ fun HomeScreen(navController: NavController, authModel: AuthModel) {
                 drawerShape = RoundedCornerShape(10),
                 drawerContainerColor = MaterialTheme.colorScheme.primaryContainer,
                 drawerContentColor = MaterialTheme.colorScheme.secondary,
-            ){
+            ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -160,7 +157,6 @@ fun HomeScreen(navController: NavController, authModel: AuthModel) {
                 ) {
 
 
-
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween,
@@ -169,8 +165,7 @@ fun HomeScreen(navController: NavController, authModel: AuthModel) {
                     ) {
                         Text("")
                         IconButton(
-                            modifier = Modifier
-                            ,
+                            modifier = Modifier,
                             onClick = {
                                 scope.launch {
                                     drawerState.close()
@@ -190,7 +185,7 @@ fun HomeScreen(navController: NavController, authModel: AuthModel) {
                     Column(
                         verticalArrangement = Arrangement.SpaceEvenly,
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier=Modifier
+                        modifier = Modifier
                             .fillMaxWidth()
                     ) {
 
@@ -201,15 +196,15 @@ fun HomeScreen(navController: NavController, authModel: AuthModel) {
                             modifier = Modifier
                                 .fillMaxWidth()
                         ) {
-                            if (imageURL.value != null){
+                            if (imageURL.value != null) {
                                 imageURL.value?.let {
                                     if (Build.VERSION.SDK_INT < 28) {
                                         bitmap.value = MediaStore.Images
-                                            .Media.getBitmap(context.contentResolver,it)
+                                            .Media.getBitmap(context.contentResolver, it)
 
                                     } else {
                                         val source = ImageDecoder
-                                            .createSource(context.contentResolver,it)
+                                            .createSource(context.contentResolver, it)
                                         bitmap.value = ImageDecoder.decodeBitmap(source)
                                     }
 
@@ -217,13 +212,13 @@ fun HomeScreen(navController: NavController, authModel: AuthModel) {
                                     IconButton(
                                         modifier = Modifier
                                             .size(150.dp)
-                                            .clip(CircleShape)
-                                        ,
-                                        onClick = {launcher.launch("image/*")}
+                                            .clip(CircleShape),
+                                        onClick = { launcher.launch("image/*") }
                                     ) {
-                                        if (bitmap.value != null){
+                                        if (bitmap.value != null) {
                                             bitmap.value?.let {
-                                                MutableInitialValues.profileImage.value = it.asImageBitmap()
+                                                MutableInitialValues.profileImage.value =
+                                                    it.asImageBitmap()
                                                 Image(
                                                     bitmap = it.asImageBitmap(),
                                                     contentScale = ContentScale.Crop,
@@ -232,7 +227,7 @@ fun HomeScreen(navController: NavController, authModel: AuthModel) {
 
                                                 )
                                             }
-                                        }else{
+                                        } else {
                                             Icon(
                                                 painter = painterResource(R.drawable.ic_launcher_background),
                                                 tint = Color.Unspecified,
@@ -246,26 +241,22 @@ fun HomeScreen(navController: NavController, authModel: AuthModel) {
                                     }
 
                                 }
-                            }else{
+                            } else {
                                 IconButton(
                                     modifier = Modifier
                                         .size(150.dp)
-                                        .clip(RoundedCornerShape(50))
-                                    ,
-                                    onClick = {launcher.launch("image/*")}
+                                        .clip(RoundedCornerShape(50)),
+                                    onClick = { launcher.launch("image/*") }
                                 ) {
-                                        Icon(
-                                            painter = painterResource(R.drawable.ic_launcher_background),
-                                            tint = Color.Unspecified,
-                                            contentDescription = "",
-                                            modifier = Modifier
-                                                .fillMaxSize()
+                                    Icon(
+                                        painter = painterResource(R.drawable.ic_launcher_background),
+                                        tint = Color.Unspecified,
+                                        contentDescription = "",
+                                        modifier = Modifier
+                                            .fillMaxSize()
 
-                                        )
-                                        }
-
-
-
+                                    )
+                                }
 
 
                             }
@@ -279,8 +270,6 @@ fun HomeScreen(navController: NavController, authModel: AuthModel) {
                                     tint = MaterialTheme.colorScheme.primary
                                 )
                             }
-
-
 
 
                         }
@@ -303,13 +292,13 @@ fun HomeScreen(navController: NavController, authModel: AuthModel) {
                             )
                         },
                         selected = false,
-                        onClick = {navController.navigate(route = ScreensNav.ProfileScreen.route)},
+                        onClick = { navController.navigate(route = ScreensNav.ProfileScreen.route) },
                         modifier = Modifier
                             .fillMaxWidth(),
                         icon = {
                             Row(
                                 horizontalArrangement = Arrangement.SpaceBetween,
-                                modifier=Modifier
+                                modifier = Modifier
                                     .fillMaxWidth()
                             ) {
                                 Row {
@@ -319,7 +308,7 @@ fun HomeScreen(navController: NavController, authModel: AuthModel) {
                                     )
                                     Text(
                                         text = "Profile",
-                                        modifier=Modifier
+                                        modifier = Modifier
                                             .padding(start = 7.dp)
                                     )
 
@@ -334,7 +323,9 @@ fun HomeScreen(navController: NavController, authModel: AuthModel) {
                         },
                         shape = RoundedCornerShape(30),
                         colors = NavigationDrawerItemDefaults.colors(
-                            unselectedContainerColor = MaterialTheme.colorScheme.secondaryContainer.copy(.1f),
+                            unselectedContainerColor = MaterialTheme.colorScheme.secondaryContainer.copy(
+                                .1f
+                            ),
                             selectedContainerColor = MaterialTheme.colorScheme.surfaceContainer
                         ),
                     )
@@ -346,13 +337,13 @@ fun HomeScreen(navController: NavController, authModel: AuthModel) {
                             )
                         },
                         selected = false,
-                        onClick = {navController.navigate(route = ScreensNav.SettingsScreen.route)},
+                        onClick = { navController.navigate(route = ScreensNav.SettingsScreen.route) },
                         modifier = Modifier
                             .fillMaxWidth(),
                         icon = {
                             Row(
                                 horizontalArrangement = Arrangement.SpaceBetween,
-                                modifier=Modifier
+                                modifier = Modifier
                                     .fillMaxWidth()
                             ) {
                                 Row {
@@ -362,7 +353,7 @@ fun HomeScreen(navController: NavController, authModel: AuthModel) {
                                     )
                                     Text(
                                         text = "Settings",
-                                        modifier=Modifier
+                                        modifier = Modifier
                                             .padding(start = 7.dp)
                                     )
 
@@ -377,7 +368,9 @@ fun HomeScreen(navController: NavController, authModel: AuthModel) {
                         },
                         shape = RoundedCornerShape(30),
                         colors = NavigationDrawerItemDefaults.colors(
-                            unselectedContainerColor = MaterialTheme.colorScheme.secondaryContainer.copy(.1f),
+                            unselectedContainerColor = MaterialTheme.colorScheme.secondaryContainer.copy(
+                                .1f
+                            ),
                             selectedContainerColor = MaterialTheme.colorScheme.primary
                         ),
                     )
@@ -389,13 +382,13 @@ fun HomeScreen(navController: NavController, authModel: AuthModel) {
                             )
                         },
                         selected = true,
-                        onClick = {navController.navigate(route = ScreensNav.ContactScreen.route)},
+                        onClick = { navController.navigate(route = ScreensNav.ContactScreen.route) },
                         modifier = Modifier
                             .fillMaxWidth(),
                         icon = {
                             Row(
                                 horizontalArrangement = Arrangement.SpaceBetween,
-                                modifier=Modifier
+                                modifier = Modifier
                                     .fillMaxWidth()
                             ) {
                                 Row {
@@ -405,7 +398,7 @@ fun HomeScreen(navController: NavController, authModel: AuthModel) {
                                     )
                                     Text(
                                         text = "Contact",
-                                        modifier=Modifier
+                                        modifier = Modifier
                                             .padding(start = 7.dp)
                                     )
 
@@ -420,7 +413,9 @@ fun HomeScreen(navController: NavController, authModel: AuthModel) {
                         },
                         shape = RoundedCornerShape(30),
                         colors = NavigationDrawerItemDefaults.colors(
-                            unselectedContainerColor = MaterialTheme.colorScheme.secondaryContainer.copy(.1f),
+                            unselectedContainerColor = MaterialTheme.colorScheme.secondaryContainer.copy(
+                                .1f
+                            ),
                             selectedContainerColor = MaterialTheme.colorScheme.surfaceContainer
                         ),
                     )
@@ -432,13 +427,13 @@ fun HomeScreen(navController: NavController, authModel: AuthModel) {
                             )
                         },
                         selected = false,
-                        onClick = {navController.navigate(route = ScreensNav.ShareScreen.route)},
+                        onClick = { navController.navigate(route = ScreensNav.ShareScreen.route) },
                         modifier = Modifier
                             .fillMaxWidth(),
                         icon = {
                             Row(
                                 horizontalArrangement = Arrangement.SpaceBetween,
-                                modifier=Modifier
+                                modifier = Modifier
                                     .fillMaxWidth()
                             ) {
                                 Row {
@@ -448,7 +443,7 @@ fun HomeScreen(navController: NavController, authModel: AuthModel) {
                                     )
                                     Text(
                                         text = "Share App",
-                                        modifier=Modifier
+                                        modifier = Modifier
                                             .padding(start = 7.dp)
                                     )
 
@@ -463,7 +458,9 @@ fun HomeScreen(navController: NavController, authModel: AuthModel) {
                         },
                         shape = RoundedCornerShape(30),
                         colors = NavigationDrawerItemDefaults.colors(
-                            unselectedContainerColor = MaterialTheme.colorScheme.secondaryContainer.copy(.1f),
+                            unselectedContainerColor = MaterialTheme.colorScheme.secondaryContainer.copy(
+                                .1f
+                            ),
                             selectedContainerColor = MaterialTheme.colorScheme.primary
                         ),
                     )
@@ -475,13 +472,13 @@ fun HomeScreen(navController: NavController, authModel: AuthModel) {
                             )
                         },
                         selected = false,
-                        onClick = {navController.navigate(route = ScreensNav.HelpScreen.route)},
+                        onClick = { navController.navigate(route = ScreensNav.HelpScreen.route) },
                         modifier = Modifier
                             .fillMaxWidth(),
                         icon = {
                             Row(
                                 horizontalArrangement = Arrangement.SpaceBetween,
-                                modifier=Modifier
+                                modifier = Modifier
                                     .fillMaxWidth()
                             ) {
                                 Row {
@@ -491,7 +488,7 @@ fun HomeScreen(navController: NavController, authModel: AuthModel) {
                                     )
                                     Text(
                                         text = "Help",
-                                        modifier=Modifier
+                                        modifier = Modifier
                                             .padding(start = 7.dp)
                                     )
 
@@ -506,7 +503,9 @@ fun HomeScreen(navController: NavController, authModel: AuthModel) {
                         },
                         shape = RoundedCornerShape(30),
                         colors = NavigationDrawerItemDefaults.colors(
-                            unselectedContainerColor = MaterialTheme.colorScheme.secondaryContainer.copy(.1f),
+                            unselectedContainerColor = MaterialTheme.colorScheme.secondaryContainer.copy(
+                                .1f
+                            ),
                             selectedContainerColor = MaterialTheme.colorScheme.primary
                         ),
                     )
@@ -555,7 +554,7 @@ fun HomeScreen(navController: NavController, authModel: AuthModel) {
                                     }
                                 }
                             }) {
-                                if (MutableInitialValues.profileImage.value != null){
+                                if (MutableInitialValues.profileImage.value != null) {
                                     Image(
                                         bitmap = MutableInitialValues.profileImage.value!!,
                                         contentDescription = null,
@@ -565,13 +564,14 @@ fun HomeScreen(navController: NavController, authModel: AuthModel) {
                                             .clip(shape = CircleShape)
 
                                     )
-                                }else{
+                                } else {
                                     Icon(
                                         painter = painterResource(R.drawable.ic_launcher_background),
                                         contentDescription = null,
                                         tint = MaterialTheme.colorScheme.primary,
                                         modifier = Modifier
-                                            .size(80.dp).clip(shape = CircleShape)
+                                            .size(80.dp)
+                                            .clip(shape = CircleShape)
                                     )
                                 }
 
@@ -652,7 +652,7 @@ fun HomeScreen(navController: NavController, authModel: AuthModel) {
                                 )
                             }
                             IconButton(
-                                onClick = {navController.navigate(route = ScreensNav.SearchScreen.route)}
+                                onClick = { navController.navigate(route = ScreensNav.SearchScreen.route) }
                             ) {
                                 Icon(
                                     imageVector = Icons.Filled.Search,
@@ -663,7 +663,7 @@ fun HomeScreen(navController: NavController, authModel: AuthModel) {
                                 )
                             }
                             IconButton(
-                                onClick = {navController.navigate(route = ScreensNav.CartScreen.route)}
+                                onClick = { navController.navigate(route = ScreensNav.CartScreen.route) }
                             ) {
                                 Icon(
                                     imageVector = Icons.Filled.ShoppingCart,
@@ -674,7 +674,7 @@ fun HomeScreen(navController: NavController, authModel: AuthModel) {
                                 )
                             }
                             IconButton(
-                                onClick = {navController.navigate(route = ScreensNav.ProfileScreen.route)}
+                                onClick = { navController.navigate(route = ScreensNav.ProfileScreen.route) }
                             ) {
                                 Icon(
                                     imageVector = Icons.Filled.Person,
@@ -720,7 +720,7 @@ fun HomeScreen(navController: NavController, authModel: AuthModel) {
                     },
                     shape = RoundedCornerShape(30),
                     colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedContainerColor = MaterialTheme.colorScheme.surface ,
+                        unfocusedContainerColor = MaterialTheme.colorScheme.surface,
                         focusedContainerColor = MaterialTheme.colorScheme.surface,
                         unfocusedBorderColor = MaterialTheme.colorScheme.surface,
                         focusedBorderColor = MaterialTheme.colorScheme.surface,
@@ -734,86 +734,104 @@ fun HomeScreen(navController: NavController, authModel: AuthModel) {
                         .padding(top = 10.dp)
 
                 )
-                Row(
+
+                LazyRow(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .horizontalScroll(rememberScrollState())
                 ) {
-                    for(i in 1..5){
-                        ElevatedCard(
-                            modifier = Modifier
-                                .padding(top = 8.dp)
-                                .fillMaxWidth()
-                                .width(screenWidth - 17.5.dp)
-                                .height(100.dp)
-                                .background(MaterialTheme.colorScheme.primaryContainer)
-                            ,
-                            shape = RoundedCornerShape(16.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.primary
-                            ),
-                            elevation = CardDefaults.elevatedCardElevation(
-                                defaultElevation = 16.dp,
-                            )
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween,
+                    items(
+                        items = allCarousels,
+                        itemContent = { item ->
+                            ElevatedCard(
                                 modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(8.dp)
-                            ) {
-                                Column(
-                                    verticalArrangement = Arrangement.Center,
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    modifier = Modifier
-                                        .fillMaxHeight(),
-
-                                    ) {
-                                    Text(
-                                        text="Get Winter Discount"
-                                    )
-                                    Text(
-                                        text="20% Off"
-                                    )
-                                    Text(
-                                        text="For Children"
-                                    )
-                                }
-                                Image(
-                                    painter = painterResource(R.drawable.ic_launcher_background),
-                                    contentDescription = null,
-                                    modifier = Modifier
-                                        .clip(RoundedCornerShape(16.dp))
+                                    .fillMaxWidth()
+                                    .width(screenWidth - 17.5.dp)
+                                    .height(120.dp)
+                                    .padding(top = 8.dp)
+                                    .background(MaterialTheme.colorScheme.primaryContainer),
+                                shape = RoundedCornerShape(16.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.primary
+                                ),
+                                elevation = CardDefaults.elevatedCardElevation(
+                                    defaultElevation = 16.dp,
                                 )
+                            ) {
+                                Row(
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(8.dp)
+                                ) {
+                                    Column(
+                                        verticalArrangement = Arrangement.Center,
+                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                        modifier = Modifier
+                                            .fillMaxHeight(),
+
+                                        ) {
+                                        Text(
+                                            text = MutableInitialValues.carouselTitle.value
+                                        )
+                                        Text(
+                                            text = item.discountPercentage.toString() + MutableInitialValues.carouselDiscount.value
+                                        )
+                                        Text(
+                                            text = item.title,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
+                                        )
+                                    }
+                                    Image(
+                                        painter = rememberAsyncImagePainter(item.thumbnail),
+                                        contentDescription = null,
+                                        modifier = Modifier
+                                            .clip(RoundedCornerShape(16.dp))
+                                    )
+
+                                }
+
                             }
 
                         }
-                    }
-
-
-
+                    )
                 }
-                Row(
+
+                LazyRow(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center,
                     modifier = Modifier
-                        .padding(top=8.dp)
                         .fillMaxWidth()
+                        .padding(top = 8.dp)
                 ) {
-                    for (i in 1..5){
-                        Icon(
-                            imageVector = Icons.Filled.Circle,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier
-                                .size(15.dp)
-                        )
-                    }
+                    items(
+                        items = allCarousels,
+                        itemContent = {
+
+                            Icon(
+                                imageVector = Icons.Filled.Circle,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier
+                                    .size(15.dp)
+                            )
+
+
+                        }
+                    )
 
                 }
+
+                if (MutableInitialValues.error.value.isNotEmpty()){
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        text = MutableInitialValues.error.value
+                    )
+                    Spacer(Modifier.height(8.dp))
+                }
+
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
@@ -821,140 +839,71 @@ fun HomeScreen(navController: NavController, authModel: AuthModel) {
                         .fillMaxWidth()
                 ) {
                     Text(
-                        text="Featured"
+                        text = MutableInitialValues.featured.value
                     )
                     TextButton(onClick = {}) {
                         Text(
-                            text = "See All"
+                            text = MutableInitialValues.seeAll.value
                         )
                     }
 
                 }
-                Row(
+                LazyRow(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .horizontalScroll(rememberScrollState())
-                ){
-                    for(i in 1..10){
-                        Card(
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.surface
-                            ),
-                            modifier = Modifier
-                                .width(screenWidth/3)
-                                .height(150.dp)
-                            ,
-                            onClick = {}) {
-                            Column {
-                                Image(
-                                    contentScale = ContentScale.FillBounds,
-                                    painter = painterResource(R.drawable.camera),
-                                    contentDescription = null,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(90.dp)
-                                )
+                ) {
+                    items(
+                        items = allItemsApi,
+                        itemContent = {
+                            Card(
+                                colors = CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.surface
+                                ),
+                                modifier = Modifier
+                                    .width(screenWidth / 3)
+                                    .height(150.dp),
+                                onClick = {}) {
+                                Column {
+                                    Image(
+                                        contentScale = ContentScale.FillBounds,
+                                        painter = rememberAsyncImagePainter(it.thumbnail),
+                                        contentDescription = null,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(90.dp)
+                                    )
 
                                     Text(
-                                        text = "Watch",
+                                        overflow = TextOverflow.Ellipsis,
+                                        maxLines = 1,
+                                        text = it.title,
                                         modifier = Modifier
                                             .padding(start = 10.dp)
                                     )
 
-                                Row(
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.Bottom,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                ) {
-                                    TextButton(onClick = {}) {
-                                        Text(
-                                            text="5.00$",
-                                        )
-                                    }
-                                    TextButton(onClick = {}) {
-                                        Text(
-                                            text="View"
-                                        )
+                                    Row(
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.Bottom,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                    ) {
+                                        TextButton(onClick = {}) {
+                                            Text(
+                                                text = it.price.toString(),
+                                            )
+                                        }
+                                        TextButton(onClick = {}) {
+                                            Text(
+                                                text = "View"
+                                            )
+                                        }
                                     }
                                 }
                             }
-                        }
-                    }
 
-                }
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    Text(
-                        text="Most Popular"
+                        }
                     )
-                    TextButton(onClick = {}) {
-                        Text(
-                            text = "See All"
-                        )
-                    }
-
-                }
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .horizontalScroll(rememberScrollState())
-                ){
-                    for(i in 1..10){
-                        Card(
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.surface
-                            ),
-                            modifier = Modifier
-                                .width(screenWidth/3)
-                                .height(150.dp)
-                            ,
-                            onClick = {}) {
-                            Column {
-                                Image(
-                                    contentScale = ContentScale.FillBounds,
-                                    painter = painterResource(R.drawable.camera),
-                                    contentDescription = null,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(90.dp)
-                                )
-
-                                Text(
-                                    text = "Watch",
-                                    modifier = Modifier
-                                        .padding(start = 10.dp)
-                                )
-
-                                Row(
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.Bottom,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                ) {
-                                    TextButton(onClick = {}) {
-                                        Text(
-                                            text="5.00$",
-                                        )
-                                    }
-                                    TextButton(onClick = {}) {
-                                        Text(
-                                            text="View"
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
-
                 }
 
                 Row(
@@ -964,71 +913,147 @@ fun HomeScreen(navController: NavController, authModel: AuthModel) {
                         .fillMaxWidth()
                 ) {
                     Text(
-                        text="Electronics"
+                        text = MutableInitialValues.mostPopular.value
                     )
                     TextButton(onClick = {}) {
                         Text(
-                            text = "See All"
+                            text = MutableInitialValues.seeAll.value
                         )
                     }
 
                 }
-                Row(
+                LazyRow(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .horizontalScroll(rememberScrollState())
-                ){
-                    for(i in 1..10){
-                        Card(
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.surface
-                            ),
-                            modifier = Modifier
-                                .width(screenWidth/3)
-                                .height(150.dp)
-                            ,
-                            onClick = {}) {
-                            Column {
-                                Image(
-                                    contentScale = ContentScale.FillBounds,
-                                    painter = painterResource(R.drawable.camera),
-                                    contentDescription = null,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(90.dp)
-                                )
+                ) {
+                    items(
+                        items = allItemsApiMostPopular,
+                        itemContent = {
+                            Card(
+                                colors = CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.surface
+                                ),
+                                modifier = Modifier
+                                    .width(screenWidth / 3)
+                                    .height(150.dp),
+                                onClick = {}) {
+                                Column {
+                                    Image(
+                                        contentScale = ContentScale.FillBounds,
+                                        painter = rememberAsyncImagePainter(it.thumbnail),
+                                        contentDescription = null,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(90.dp)
+                                    )
 
-                                Text(
-                                    text = "Watch",
-                                    modifier = Modifier
-                                        .padding(start = 10.dp)
-                                )
+                                    Text(
+                                        overflow = TextOverflow.Ellipsis,
+                                        text = it.title,
+                                        maxLines = 1,
+                                        modifier = Modifier
+                                            .padding(start = 10.dp)
+                                    )
 
-                                Row(
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.Bottom,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                ) {
-                                    TextButton(onClick = {}) {
-                                        Text(
-                                            text="5.00$",
-                                        )
-                                    }
-                                    TextButton(onClick = {}) {
-                                        Text(
-                                            text="View"
-                                        )
+                                    Row(
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.Bottom,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                    ) {
+                                        TextButton(onClick = {}) {
+                                            Text(
+                                                text = it.price.toString(),
+                                            )
+                                        }
+                                        TextButton(onClick = {}) {
+                                            Text(
+                                                text = "View"
+                                            )
+                                        }
                                     }
                                 }
                             }
+
                         }
+                    )
+                }
+
+
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    Text(
+                        text = MutableInitialValues.electronics.value
+                    )
+                    TextButton(onClick = {}) {
+                        Text(
+                            text = MutableInitialValues.seeAll.value
+                        )
                     }
 
                 }
+                LazyRow(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier
+                ) {
+                    items(
+                        items = allItemsApiElectronics,
+                        itemContent = {
+                            Card(
+                                colors = CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.surface
+                                ),
+                                modifier = Modifier
+                                    .width(screenWidth / 3)
+                                    .height(150.dp),
+                                onClick = {}) {
+                                Column {
+                                    Image(
+                                        contentScale = ContentScale.FillBounds,
+                                        painter = rememberAsyncImagePainter(it.thumbnail),
+                                        contentDescription = null,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(90.dp)
+                                    )
 
+                                    Text(
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                        text = it.title,
+                                        modifier = Modifier
+                                            .padding(start = 10.dp)
+                                    )
+
+                                    Row(
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.Bottom,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                    ) {
+                                        TextButton(onClick = {}) {
+                                            Text(
+                                                text = it.price.toString(),
+                                            )
+                                        }
+                                        TextButton(onClick = {}) {
+                                            Text(
+                                                text = "View"
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+
+                        }
+                    )
+                }
 
 
             }
