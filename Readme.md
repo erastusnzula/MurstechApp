@@ -7,8 +7,6 @@ The page includes a list of products with images, descriptions, and prices.
 
 ScreenShots
 ------------------------
-![landing_page.png](landing_page.png)
+![landing_page.png](app%2Flanding_page.png)
 
-![DrawerPage.png](DrawerPage.png)
-
-![Screenshot_20250318_144556.png](Screenshot_20250318_144556.png)
+![DrawerPage.png](app%2FDrawerPage.png)
