@@ -11,6 +11,7 @@ import androidx.navigation.compose.composable
 
 import androidx.navigation.compose.rememberNavController
 import com.example.murstechapp.models.AuthModel
+import com.example.murstechapp.models.Products
 import com.example.murstechapp.screens.CartScreen
 import com.example.murstechapp.screens.ContactScreen
 import com.example.murstechapp.screens.HelpScreen
@@ -53,7 +54,11 @@ fun NavigationStack(authModel: AuthModel) {
             CartScreen(navController=navController)
         }
         composable(route=ScreensNav.ItemScreen.route){
-            ItemScreen(navController=navController)
+            val products = navController.previousBackStackEntry?.savedStateHandle?.get<ArrayList<Products>>("products")
+            if (products != null) {
+                ItemScreen(navController=navController, products = products)
+            }
+
         }
         composable(route=ScreensNav.ItemsScreen.route){
             ItemsScreen(navController=navController)

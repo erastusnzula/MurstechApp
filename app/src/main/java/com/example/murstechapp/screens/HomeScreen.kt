@@ -5,6 +5,7 @@ import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -33,6 +34,7 @@ import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.AttachFile
 import androidx.compose.material.icons.filled.Circle
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.MailOutline
@@ -75,6 +77,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
@@ -93,6 +96,7 @@ import com.example.murstechapp.api.ApiCall
 import com.example.murstechapp.data.MutableInitialValues
 import com.example.murstechapp.models.AuthModel
 import com.example.murstechapp.models.CarouselModel
+import com.example.murstechapp.models.Products
 import com.example.murstechapp.models.UserStatus
 import com.example.murstechapp.navigation.ScreensNav
 import com.google.firebase.auth.FirebaseAuth
@@ -745,6 +749,16 @@ fun HomeScreen(navController: NavController, authModel: AuthModel) {
                         items = allCarousels,
                         itemContent = { item ->
                             ElevatedCard(
+                                onClick = {
+                                    try{
+                                        val products = ArrayList<Products>()
+                                        products.add(item)
+                                        navController.currentBackStackEntry?.savedStateHandle?.set("products", products)
+                                        navController.navigate(route = ScreensNav.ItemScreen.route)
+                                    }catch (e: Exception){
+                                        Toast.makeText(context, e.message.toString(), Toast.LENGTH_LONG).show()
+                                    }
+                                },
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .width(screenWidth - 17.5.dp)
@@ -842,7 +856,9 @@ fun HomeScreen(navController: NavController, authModel: AuthModel) {
                     Text(
                         text = MutableInitialValues.featured.value
                     )
-                    TextButton(onClick = {}) {
+                    TextButton(onClick = {
+                        navController.navigate(route = ScreensNav.ItemsScreen.route)
+                    }) {
                         Text(
                             text = MutableInitialValues.seeAll.value
                         )
@@ -864,16 +880,53 @@ fun HomeScreen(navController: NavController, authModel: AuthModel) {
                                 modifier = Modifier
                                     .width(screenWidth / 3)
                                     .height(150.dp),
-                                onClick = {}) {
+                                onClick = {
+                                    try{
+                                        val products = ArrayList<Products>()
+                                        products.add(it)
+                                        navController.currentBackStackEntry?.savedStateHandle?.set("products", products)
+                                        navController.navigate(route = ScreensNav.ItemScreen.route)
+                                    }catch (e: Exception){
+                                        Toast.makeText(context, e.message.toString(), Toast.LENGTH_LONG).show()
+                                    }
+
+                                }) {
                                 Column {
-                                    Image(
-                                        contentScale = ContentScale.FillBounds,
-                                        painter = rememberAsyncImagePainter(it.thumbnail),
-                                        contentDescription = null,
-                                        modifier = Modifier
+//                                    Image(
+//                                        contentScale = ContentScale.FillBounds,
+//                                        painter = rememberAsyncImagePainter(it.thumbnail),
+//                                        contentDescription = null,
+//                                        modifier = Modifier
+//                                            .fillMaxWidth()
+//                                            .height(90.dp)
+//                                    )
+                                    Column(
+                                        modifier=Modifier
                                             .fillMaxWidth()
                                             .height(90.dp)
-                                    )
+                                    ) {
+                                        Column(
+                                            modifier=Modifier
+                                                .fillMaxWidth()
+                                                .paint(
+                                                    painter = rememberAsyncImagePainter(it.thumbnail),
+                                                    contentScale = ContentScale.FillBounds
+                                                )
+                                                .fillMaxHeight(1f)
+                                        ) {
+                                            IconButton(
+                                                modifier = Modifier
+                                                    .align(Alignment.End),
+                                                onClick = {}
+                                            ) {
+                                                Icon(
+                                                    imageVector = Icons.Filled.FavoriteBorder,
+                                                    contentDescription = null,
+                                                    tint = MaterialTheme.colorScheme.secondary
+                                                )
+                                            }
+                                        }
+                                    }
 
                                     Text(
                                         overflow = TextOverflow.Ellipsis,
@@ -916,7 +969,9 @@ fun HomeScreen(navController: NavController, authModel: AuthModel) {
                     Text(
                         text = MutableInitialValues.mostPopular.value
                     )
-                    TextButton(onClick = {}) {
+                    TextButton(onClick = {
+                        navController.navigate(route = ScreensNav.ItemsScreen.route)
+                    }) {
                         Text(
                             text = MutableInitialValues.seeAll.value
                         )
@@ -938,16 +993,44 @@ fun HomeScreen(navController: NavController, authModel: AuthModel) {
                                 modifier = Modifier
                                     .width(screenWidth / 3)
                                     .height(150.dp),
-                                onClick = {}) {
+                                onClick = {
+                                    try{
+                                        val products = ArrayList<Products>()
+                                        products.add(it)
+                                        navController.currentBackStackEntry?.savedStateHandle?.set("products", products)
+                                        navController.navigate(route = ScreensNav.ItemScreen.route)
+                                    }catch (e: Exception){
+                                        Toast.makeText(context, e.message.toString(), Toast.LENGTH_LONG).show()
+                                    }
+                                }) {
                                 Column {
-                                    Image(
-                                        contentScale = ContentScale.FillBounds,
-                                        painter = rememberAsyncImagePainter(it.thumbnail),
-                                        contentDescription = null,
-                                        modifier = Modifier
+                                    Column(
+                                        modifier=Modifier
                                             .fillMaxWidth()
                                             .height(90.dp)
-                                    )
+                                    ) {
+                                        Column(
+                                            modifier=Modifier
+                                                .fillMaxWidth()
+                                                .paint(
+                                                    painter = rememberAsyncImagePainter(it.thumbnail),
+                                                    contentScale = ContentScale.FillBounds
+                                                )
+                                                .fillMaxHeight(1f)
+                                        ) {
+                                            IconButton(
+                                                modifier = Modifier
+                                                    .align(Alignment.End),
+                                                onClick = {}
+                                            ) {
+                                                Icon(
+                                                    imageVector = Icons.Filled.FavoriteBorder,
+                                                    contentDescription = null,
+                                                    tint = MaterialTheme.colorScheme.secondary
+                                                )
+                                            }
+                                        }
+                                    }
 
                                     Text(
                                         overflow = TextOverflow.Ellipsis,
@@ -991,7 +1074,9 @@ fun HomeScreen(navController: NavController, authModel: AuthModel) {
                     Text(
                         text = MutableInitialValues.electronics.value
                     )
-                    TextButton(onClick = {}) {
+                    TextButton(onClick = {
+                        navController.navigate(route = ScreensNav.ItemsScreen.route)
+                    }) {
                         Text(
                             text = MutableInitialValues.seeAll.value
                         )
@@ -1013,16 +1098,44 @@ fun HomeScreen(navController: NavController, authModel: AuthModel) {
                                 modifier = Modifier
                                     .width(screenWidth / 3)
                                     .height(150.dp),
-                                onClick = {}) {
+                                onClick = {
+                                    try{
+                                        val products = ArrayList<Products>()
+                                        products.add(it)
+                                        navController.currentBackStackEntry?.savedStateHandle?.set("products", products)
+                                        navController.navigate(route = ScreensNav.ItemScreen.route)
+                                    }catch (e: Exception){
+                                        Toast.makeText(context, e.message.toString(), Toast.LENGTH_LONG).show()
+                                    }
+                                }) {
                                 Column {
-                                    Image(
-                                        contentScale = ContentScale.FillBounds,
-                                        painter = rememberAsyncImagePainter(it.thumbnail),
-                                        contentDescription = null,
-                                        modifier = Modifier
+                                    Column(
+                                        modifier=Modifier
                                             .fillMaxWidth()
                                             .height(90.dp)
-                                    )
+                                    ) {
+                                        Column(
+                                            modifier=Modifier
+                                                .fillMaxWidth()
+                                                .paint(
+                                                    painter = rememberAsyncImagePainter(it.thumbnail),
+                                                    contentScale = ContentScale.FillBounds
+                                                )
+                                                .fillMaxHeight(1f)
+                                        ) {
+                                            IconButton(
+                                                modifier = Modifier
+                                                    .align(Alignment.End),
+                                                onClick = {}
+                                            ) {
+                                                Icon(
+                                                    imageVector = Icons.Filled.FavoriteBorder,
+                                                    contentDescription = null,
+                                                    tint = MaterialTheme.colorScheme.secondary
+                                                )
+                                            }
+                                        }
+                                    }
 
                                     Text(
                                         maxLines = 1,
@@ -1064,3 +1177,7 @@ fun HomeScreen(navController: NavController, authModel: AuthModel) {
     }
 }
 
+@Composable
+fun ViewItem(){
+
+}

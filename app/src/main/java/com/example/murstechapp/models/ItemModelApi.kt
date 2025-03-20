@@ -20,9 +20,17 @@ data class Products(
     val sku: String,
     val weight: Int,
     val images: List<String>,
-    val thumbnail: String
+    val thumbnail: String,
+    val reviews: List<Review>
 )
 
+data class Review(
+    val rating: String,
+    val comment: String,
+    val date: String,
+    val reviewerName: String,
+    val reviewerEmail: String
+)
 
 
 
