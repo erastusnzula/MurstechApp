@@ -5,6 +5,10 @@ The landing page fetches product data from a backend API and displays it dynamic
 The page includes a list of products with images, descriptions, and prices.
 
 
-ScreenShots
+Landing Page
 ------------------------
-![Landing Page](ScreenShots/landing_page.png) ![Drawer](ScreenShots/DrawerPage.png)
+![Landing Page](ScreenShots/landing_page.png)
+
+Drawer
+------
+![Drawer](ScreenShots/DrawerPage.png)
