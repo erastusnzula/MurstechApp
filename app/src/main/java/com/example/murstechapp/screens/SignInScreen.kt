@@ -65,6 +65,7 @@ fun SignInScreen(navController: NavController, authModel: AuthModel) {
     val showPassword = remember { mutableStateOf(false) }
 
 
+
     LaunchedEffect(authenticationStatus.value) {
         when (authenticationStatus.value) {
             is UserStatus.Authenticated -> {
@@ -104,7 +105,8 @@ fun SignInScreen(navController: NavController, authModel: AuthModel) {
 
         Text(
             fontSize = 20.sp,
-            text = "Welcome Back!"
+            text = "Welcome Back!",
+            color = MaterialTheme.colorScheme.secondary
         )
         Spacer(Modifier.height(16.dp))
 
@@ -157,7 +159,8 @@ fun SignInScreen(navController: NavController, authModel: AuthModel) {
         Spacer(Modifier.height(16.dp))
 
         Text(
-            text = MutableInitialValues.signInError.value
+            text = MutableInitialValues.signInError.value,
+            color = MaterialTheme.colorScheme.error
         )
         Spacer(Modifier.height(16.dp))
         OutlinedTextField(

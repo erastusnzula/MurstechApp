@@ -23,12 +23,15 @@ fun ApiCall() {
                 MutableInitialValues.seeAll.value = "See All"
                 Toast.makeText(context, "Data fetch complete!", Toast.LENGTH_LONG).show()
                 MutableInitialValues.carouselDiscount.value = "% Off"
-
+                MutableInitialValues.allItemsApi.value.clear()
+                MutableInitialValues.allItemsApiCarousel.value.clear()
+                MutableInitialValues.allItemsApiMostPopular.value.clear()
+                MutableInitialValues.allItemsApiElectronics.value.clear()
                 for (product in p1.body()?.products!!){
                     MutableInitialValues.allItemsApi.value.add(product)
 
                 }
-                for (product in p1.body()!!.products.takeLast(5)){
+                for (product in p1.body()!!.products.takeLast(7)){
                     MutableInitialValues.allItemsApiCarousel.value.add(product)
 
                 }

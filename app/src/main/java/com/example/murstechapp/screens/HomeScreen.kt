@@ -29,6 +29,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.AttachFile
 import androidx.compose.material.icons.filled.Circle
 import androidx.compose.material.icons.filled.Clear
@@ -229,7 +230,7 @@ fun HomeScreen(navController: NavController, authModel: AuthModel) {
                                             }
                                         } else {
                                             Icon(
-                                                painter = painterResource(R.drawable.ic_launcher_background),
+                                                imageVector = Icons.Filled.AccountCircle,
                                                 tint = Color.Unspecified,
                                                 contentDescription = "",
                                                 modifier = Modifier
@@ -249,8 +250,7 @@ fun HomeScreen(navController: NavController, authModel: AuthModel) {
                                     onClick = { launcher.launch("image/*") }
                                 ) {
                                     Icon(
-                                        painter = painterResource(R.drawable.ic_launcher_background),
-                                        tint = Color.Unspecified,
+                                        imageVector = Icons.Filled.AccountCircle,
                                         contentDescription = "",
                                         modifier = Modifier
                                             .fillMaxSize()
@@ -521,6 +521,7 @@ fun HomeScreen(navController: NavController, authModel: AuthModel) {
                             .fillMaxWidth(),
                         onClick = {
                             authModel.logOut()
+                            navController.navigate(route=ScreensNav.SignInScreen.route)
                         },
                     ) {
                         Text(
@@ -566,7 +567,7 @@ fun HomeScreen(navController: NavController, authModel: AuthModel) {
                                     )
                                 } else {
                                     Icon(
-                                        painter = painterResource(R.drawable.ic_launcher_background),
+                                        imageVector = Icons.Filled.AccountCircle,
                                         contentDescription = null,
                                         tint = MaterialTheme.colorScheme.primary,
                                         modifier = Modifier
