@@ -891,7 +891,7 @@ fun HomeScreen(navController: NavController, authModel: AuthModel) {
                                     ) {
                                         TextButton(onClick = {}) {
                                             Text(
-                                                text = it.price.toString(),
+                                                text = "$" + it.price.toString(),
                                             )
                                         }
                                         TextButton(onClick = {}) {
@@ -965,7 +965,7 @@ fun HomeScreen(navController: NavController, authModel: AuthModel) {
                                     ) {
                                         TextButton(onClick = {}) {
                                             Text(
-                                                text = it.price.toString(),
+                                                text = "$"+it.price.toString(),
                                             )
                                         }
                                         TextButton(onClick = {}) {
@@ -1040,7 +1040,7 @@ fun HomeScreen(navController: NavController, authModel: AuthModel) {
                                     ) {
                                         TextButton(onClick = {}) {
                                             Text(
-                                                text = it.price.toString(),
+                                                text = "$"+it.price.toString(),
                                             )
                                         }
                                         TextButton(onClick = {}) {

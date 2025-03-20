@@ -7,8 +7,4 @@ The page includes a list of products with images, descriptions, and prices.
 
 Landing Page
 ------------------------
-![Landing Page](ScreenShots/landing_page.png)
-
-Drawer
-------
-![Drawer](ScreenShots/DrawerPage.png)
+![Landing Page](ScreenShots/Landing.png)
